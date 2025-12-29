@@ -14,6 +14,21 @@ export interface SearchResponse {
     total: number;
 }
 
+export interface UpdateUserRequest {
+    first_name?: string;
+    last_name?: string;
+    phone?: string;
+    address?: string;
+    username?: string;
+    avatar?: File;
+}
+
+export interface UpdateSettingsRequest {
+    currency?: string;
+    language?: string;
+    notifications?: boolean;
+}
+
 export const userAPI = {
     // Search for users to send money to
     search: async (query: string): Promise<SearchResponse> => {
@@ -30,8 +45,32 @@ export const userAPI = {
     },
 
     // Update profile
-    updateProfile: async (data: any) => {
-        const response = await apiClient.put('/users/me', data);
+    updateProfile: async (data: UpdateUserRequest) => {
+        const formData = new FormData();
+        if (data.first_name) formData.append('first_name', data.first_name);
+        if (data.last_name) formData.append('last_name', data.last_name);
+        if (data.phone) formData.append('phone', data.phone);
+        if (data.address) formData.append('address', data.address);
+        if (data.username) formData.append('username', data.username);
+        if (data.avatar) formData.append('avatar', data.avatar);
+
+        const response = await apiClient.put('/users/me', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        return response.data;
+    },
+
+    // Get settings
+    getSettings: async () => {
+        const response = await apiClient.get('/users/settings');
+        return response.data;
+    },
+
+    // Update settings
+    updateSettings: async (data: UpdateSettingsRequest) => {
+        const response = await apiClient.put('/users/settings', data);
         return response.data;
     },
 };
