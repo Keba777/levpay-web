@@ -7,8 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Skeleton } from "@/components/ui/Skeleton";
-import { Avatar } from "@/components/ui/Avatar";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
     User,
     Settings,
@@ -183,13 +183,15 @@ export default function SettingsPage() {
                                     {/* Avatar Section */}
                                     <div className="flex flex-col md:flex-row items-center gap-8">
                                         <div className="relative group">
-                                            <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-mint-green/20 p-1 group-hover:border-mint-green/50 transition-colors">
-                                                <img
+                                            <Avatar className="w-32 h-32 rounded-full overflow-hidden border-4 border-mint-green/20 p-1 group-hover:border-mint-green/50 transition-colors">
+                                                <AvatarImage
                                                     src={avatarPreview || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.username || 'user'}`}
-                                                    alt="avatar"
                                                     className="w-full h-full object-cover rounded-full"
                                                 />
-                                            </div>
+                                                <AvatarFallback className="text-4xl font-black bg-mint-green text-deep-teal">
+                                                    {user?.first_name?.[0]}{user?.last_name?.[0]}
+                                                </AvatarFallback>
+                                            </Avatar>
                                             <label className="absolute bottom-0 right-0 p-2 bg-deep-teal text-white rounded-full cursor-pointer hover:scale-110 transition-transform shadow-lg">
                                                 <Camera className="w-5 h-5" />
                                                 <input type="file" className="hidden" accept="image/*" onChange={handleFileChange} />

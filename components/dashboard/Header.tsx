@@ -1,8 +1,10 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { Search, Bell, Menu, UserCircle } from "lucide-react";
+import { Search, Menu, UserCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { NotificationPanel } from "./NotificationPanel";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export function Header({ onMobileMenuClick }: { onMobileMenuClick: () => void }) {
     const { data: session } = useSession();
@@ -28,10 +30,7 @@ export function Header({ onMobileMenuClick }: { onMobileMenuClick: () => void })
             </div>
 
             <div className="flex items-center gap-4">
-                <button className="relative p-2 hover:bg-mint-green/10 rounded-full text-deep-teal transition-colors">
-                    <Bell className="w-5 h-5" />
-                    <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 border-2 border-cream rounded-full"></span>
-                </button>
+                <NotificationPanel />
 
                 <div className="flex items-center gap-3 pl-4 border-l border-mint-green/20">
                     <div className="text-right hidden sm:block">
@@ -42,13 +41,12 @@ export function Header({ onMobileMenuClick }: { onMobileMenuClick: () => void })
                             {session?.user?.role || "User"}
                         </p>
                     </div>
-                    <div className="w-9 h-9 rounded-full bg-mint-green flex items-center justify-center border-2 border-white shadow-sm overflow-hidden">
-                        {session?.user?.image ? (
-                            <img src={session.user.image} alt="Avatar" className="w-full h-full object-cover" />
-                        ) : (
+                    <Avatar className="w-9 h-9 border-2 border-white shadow-sm">
+                        <AvatarImage src={session?.user?.image || ""} />
+                        <AvatarFallback>
                             <UserCircle className="w-6 h-6 text-deep-teal/50" />
-                        )}
-                    </div>
+                        </AvatarFallback>
+                    </Avatar>
                 </div>
             </div>
         </header>

@@ -8,8 +8,8 @@ import { transactionAPI } from "@/lib/api/endpoints/transaction";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { Avatar } from "@/components/ui/Avatar";
-import { Skeleton } from "@/components/ui/Skeleton";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
     ArrowLeft,
     Search,
@@ -106,11 +106,10 @@ export default function SendMoneyPage() {
                                         className="w-full flex items-center justify-between p-4 bg-white hover:bg-mint-green/5 border border-mint-green/10 rounded-2xl transition-all group shadow-sm hover:shadow-md"
                                     >
                                         <div className="flex items-center gap-4">
-                                            <Avatar
-                                                src={user.avatar_url}
-                                                fallback={`${user.first_name} ${user.last_name}`}
-                                                className="w-12 h-12"
-                                            />
+                                            <Avatar className="w-12 h-12">
+                                                <AvatarImage src={user.avatar_url} />
+                                                <AvatarFallback>{user.first_name?.[0]}{user.last_name?.[0]}</AvatarFallback>
+                                            </Avatar>
                                             <div className="text-left">
                                                 <p className="font-bold text-deep-teal">{user.first_name} {user.last_name}</p>
                                                 <p className="text-xs text-deep-teal/40">@{user.username || 'user'}</p>
@@ -141,11 +140,10 @@ export default function SendMoneyPage() {
                         </button>
 
                         <div className="flex items-center gap-4 p-4 bg-mint-green/10 rounded-3xl border border-mint-green/20">
-                            <Avatar
-                                src={selectedUser?.avatar_url}
-                                fallback={`${selectedUser?.first_name} ${selectedUser?.last_name}`}
-                                className="w-16 h-16 border-white shadow-md"
-                            />
+                            <Avatar className="w-16 h-16 border-white shadow-md">
+                                <AvatarImage src={selectedUser?.avatar_url} />
+                                <AvatarFallback>{selectedUser?.first_name?.[0]}{selectedUser?.last_name?.[0]}</AvatarFallback>
+                            </Avatar>
                             <div>
                                 <p className="text-xs font-bold text-mint-green uppercase tracking-widest">Recipient</p>
                                 <h3 className="text-xl font-bold text-deep-teal">{selectedUser?.first_name} {selectedUser?.last_name}</h3>
@@ -219,11 +217,10 @@ export default function SendMoneyPage() {
                             <div className="flex justify-between items-center text-sm border-b border-mint-green/10 pb-4">
                                 <span className="text-deep-teal/40 font-bold uppercase tracking-wider">Recipient</span>
                                 <div className="flex items-center gap-2">
-                                    <Avatar
-                                        src={selectedUser?.avatar_url}
-                                        fallback={`${selectedUser?.first_name}`}
-                                        className="w-8 h-8"
-                                    />
+                                    <Avatar className="w-8 h-8">
+                                        <AvatarImage src={selectedUser?.avatar_url} />
+                                        <AvatarFallback>{selectedUser?.first_name?.[0]}</AvatarFallback>
+                                    </Avatar>
                                     <span className="font-bold text-deep-teal">{selectedUser?.first_name} {selectedUser?.last_name}</span>
                                 </div>
                             </div>

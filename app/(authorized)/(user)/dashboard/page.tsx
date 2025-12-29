@@ -7,7 +7,7 @@ import { TransactionList } from "@/components/dashboard/TransactionList";
 import { useWalletStore } from "@/lib/store/wallet-store";
 import { useSession } from "next-auth/react";
 import { Card } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/Skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Wallet, History, TrendingUp } from "lucide-react";
 import Link from "next/link";

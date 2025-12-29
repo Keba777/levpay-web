@@ -5,7 +5,7 @@ import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { kycAPI, KYCDocument, KYCStatus } from "@/lib/api/endpoints/kyc";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/Skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
     ShieldCheck,
     Upload,
