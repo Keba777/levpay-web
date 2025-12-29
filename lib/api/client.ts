@@ -1,6 +1,6 @@
 import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from 'axios';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4003/api';
 
 // Create axios instance
 const apiClient: AxiosInstance = axios.create({
@@ -44,6 +44,7 @@ apiClient.interceptors.response.use(
         // Attempt to refresh token
         const response = await axios.post(`${API_URL}/auth/refresh`, {
           refresh_token: refreshToken,
+          fingerprint: localStorage.getItem('device_fingerprint'),
         });
 
         const { access_token } = response.data;

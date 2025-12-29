@@ -16,7 +16,7 @@ interface AuthState {
   refreshToken: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  
+
   // Actions
   setUser: (user: User) => void;
   setTokens: (accessToken: string, refreshToken: string) => void;
@@ -34,17 +34,27 @@ export const useAuthStore = create<AuthState>()(
       isLoading: false,
 
       setUser: (user) => set({ user, isAuthenticated: true }),
-      
+
       setTokens: (accessToken, refreshToken) => {
         // Also store in localStorage for axios interceptor
         localStorage.setItem('access_token', accessToken);
         localStorage.setItem('refresh_token', refreshToken);
+
+        // Sync with cookies for middleware
+        document.cookie = `access_token=${accessToken}; path=/; max-age=${30 * 60}; SameSite=Lax`;
+        document.cookie = `refresh_token=${refreshToken}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
+
         set({ accessToken, refreshToken });
       },
-      
+
       logout: () => {
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
+
+        // Clear cookies
+        document.cookie = 'access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+        document.cookie = 'refresh_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+
         set({
           user: null,
           accessToken: null,
@@ -52,7 +62,7 @@ export const useAuthStore = create<AuthState>()(
           isAuthenticated: false,
         });
       },
-      
+
       setLoading: (loading) => set({ isLoading: loading }),
     }),
     {

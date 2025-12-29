@@ -1,3 +1,4 @@
+import { cookies } from 'next/headers';
 import NextAuth, { NextAuthOptions } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import { authAPI } from '@/lib/api/endpoints/auth';
@@ -13,14 +14,17 @@ export const authOptions: NextAuthOptions = {
     async signIn({ user, account }) {
       if (account?.provider === 'google' && account.id_token) {
         try {
+          const cookieStore = await cookies();
+          const fingerprint = cookieStore.get('device_fingerprint')?.value;
+
           // Send Google token to backend
-          const response = await authAPI.googleAuth(account.id_token);
-          
+          const response = await authAPI.googleAuth(account.id_token, fingerprint);
+
           // Store tokens in user object for session
           user.accessToken = response.access_token;
           user.refreshToken = response.refresh_token;
           user.role = response.user.role;
-          
+
           return true;
         } catch (error) {
           console.error('Google auth error:', error);

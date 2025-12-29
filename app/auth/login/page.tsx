@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -20,6 +20,7 @@ import { loginSchema, LoginFormData, twoFactorSchema, TwoFactorData } from "@/li
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { setUser, setTokens } = useAuthStore();
   const [isLoading, setIsLoading] = useState(false);
   const [requires2FA, setRequires2FA] = useState(false);
@@ -55,7 +56,10 @@ export default function LoginPage() {
         setUser(response.user);
 
         // Redirect based on role
-        if (response.user.role === "admin") {
+        const callbackUrl = searchParams.get("callbackUrl");
+        if (callbackUrl) {
+          router.push(callbackUrl);
+        } else if (response.user.role === "admin") {
           router.push("/admin");
         } else {
           router.push("/dashboard");
@@ -79,7 +83,10 @@ export default function LoginPage() {
       setUser(response.user);
 
       // Redirect based on role
-      if (response.user.role === "admin") {
+      const callbackUrl = searchParams.get("callbackUrl");
+      if (callbackUrl) {
+        router.push(callbackUrl);
+      } else if (response.user.role === "admin") {
         router.push("/admin");
       } else {
         router.push("/dashboard");
@@ -164,7 +171,7 @@ export default function LoginPage() {
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <Label htmlFor="password">Password</Label>
-                      <Link href="#" className="text-xs text-deep-teal font-medium hover:underline">
+                      <Link href="/auth/forgot-password" className="text-xs text-deep-teal font-medium hover:underline">
                         Forgot password?
                       </Link>
                     </div>

@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { PersonalInfoStep } from "@/components/auth/registration-steps/personal-info";
 import { AccountDetailsStep } from "@/components/auth/registration-steps/account-details";
@@ -19,6 +20,7 @@ export default function RegisterPage() {
   const { setUser, setTokens } = useAuthStore();
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
   const [formData, setFormData] = useState<Partial<PersonalInfoData & AccountDetailsData & VerificationData>>({});
 
   const handlePersonalInfo = (data: PersonalInfoData) => {
@@ -35,18 +37,8 @@ export default function RegisterPage() {
     setIsLoading(true);
     try {
       const completeData = { ...formData, ...data };
-      const response = await authAPI.register(completeData as any);
-
-      // Store auth data
-      setTokens(response.access_token, response.refresh_token);
-      setUser(response.user);
-
-      // Redirect based on role
-      if (response.user.role === "admin") {
-        router.push("/admin");
-      } else {
-        router.push("/dashboard");
-      }
+      await authAPI.register(completeData as any);
+      setIsSuccess(true);
     } catch (error: any) {
       console.error("Registration error:", error);
       alert(error.response?.data?.message || "Registration failed. Please try again.");
@@ -60,6 +52,38 @@ export default function RegisterPage() {
     { number: 2, label: "Security" },
     { number: 3, label: "Verify" },
   ];
+
+  if (isSuccess) {
+    return (
+      <div className="min-h-screen w-full flex items-center justify-center relative overflow-hidden bg-cream py-10">
+        <div className="absolute inset-0 z-0">
+          <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-sage/20 rounded-full blur-[100px] -translate-y-1/2 -translate-x-1/2" />
+          <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-deep-teal/10 rounded-full blur-[100px] translate-y-1/2 translate-x-1/2" />
+        </div>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="w-full max-w-lg px-4 relative z-10"
+        >
+          <Card className="border-white/40 bg-white/60 backdrop-blur-xl shadow-2xl text-center p-10">
+            <div className="w-20 h-20 bg-mint-green/20 rounded-full flex items-center justify-center mx-auto mb-6">
+              <svg className="w-10 h-10 text-deep-teal" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <CardTitle className="text-3xl font-bold text-deep-teal mb-4">Registration Successful!</CardTitle>
+            <p className="text-gray-600 text-lg mb-8">
+              We&apos;ve sent a verification email to <span className="font-semibold text-deep-teal">{formData.email}</span>.
+              Please check your inbox and follow the link to complete your account setup.
+            </p>
+            <Button asChild className="bg-deep-teal hover:bg-deep-teal/90 h-12 px-8">
+              <Link href="/auth/login">Continue to Login</Link>
+            </Button>
+          </Card>
+        </motion.div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center relative overflow-hidden bg-cream py-10">
@@ -99,19 +123,17 @@ export default function RegisterPage() {
               {steps.map((step) => (
                 <div key={step.number} className="flex items-center">
                   <div
-                    className={`flex items-center justify-center w-8 h-8 rounded-full text-xs font-semibold transition-all ${
-                      currentStep >= step.number
-                        ? "bg-deep-teal text-white"
-                        : "bg-gray-200 text-gray-400"
-                    }`}
+                    className={`flex items-center justify-center w-8 h-8 rounded-full text-xs font-semibold transition-all ${currentStep >= step.number
+                      ? "bg-deep-teal text-white"
+                      : "bg-gray-200 text-gray-400"
+                      }`}
                   >
                     {step.number}
                   </div>
                   {step.number < 3 && (
                     <div
-                      className={`w-12 h-1 mx-1 rounded transition-all ${
-                        currentStep > step.number ? "bg-deep-teal" : "bg-gray-200"
-                      }`}
+                      className={`w-12 h-1 mx-1 rounded transition-all ${currentStep > step.number ? "bg-deep-teal" : "bg-gray-200"
+                        }`}
                     />
                   )}
                 </div>
