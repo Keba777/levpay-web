@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers';
 import NextAuth, { NextAuthOptions } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
+import CredentialsProvider from 'next-auth/providers/credentials';
 import { authAPI } from '@/lib/api/endpoints/auth';
 
 export const authOptions: NextAuthOptions = {
@@ -8,6 +9,39 @@ export const authOptions: NextAuthOptions = {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID || '',
       clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
+    }),
+    CredentialsProvider({
+      name: 'Credentials',
+      credentials: {
+        email: { label: 'Email', type: 'email' },
+        password: { label: 'Password', type: 'password' },
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error('Please enter an email and password');
+        }
+
+        try {
+          const response = await authAPI.login({
+            email: credentials.email,
+            password: credentials.password,
+          });
+
+          if (response && response.access_token) {
+            return {
+              id: response.user.id,
+              email: response.user.email,
+              name: `${response.user.first_name} ${response.user.last_name}`,
+              role: response.user.role,
+              accessToken: response.access_token,
+              refreshToken: response.refresh_token,
+            };
+          }
+          return null;
+        } catch (error: any) {
+          throw new Error(error.response?.data?.error || 'Invalid credentials');
+        }
+      },
     }),
   ],
   callbacks: {
@@ -38,13 +72,17 @@ export const authOptions: NextAuthOptions = {
         token.accessToken = user.accessToken;
         token.refreshToken = user.refreshToken;
         token.role = user.role;
+        token.id = user.id;
       }
       return token;
     },
     async session({ session, token }) {
       session.accessToken = token.accessToken as string;
       session.refreshToken = token.refreshToken as string;
-      session.user.role = token.role as string;
+      if (session.user) {
+        session.user.role = token.role as string;
+        session.user.id = token.id as string;
+      }
       return session;
     },
   },
